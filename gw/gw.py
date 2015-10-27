@@ -50,7 +50,11 @@ class FileDataStore(DataStore):
         with open(self.location, 'a') as message_location:
             media_formatted = self.formatted_media(message['media']) if 'media' in message else ''
 
-            message_location.write("%s|%s|%s|%s|%s|%s|%s|%s|%s\n" % (message['user']['id_str'], message['id_str'], message['user']['screen_name'], message['text'], media_formatted, message['retweet_count'], message['favorite_count'], message['created_at'], message['timestamp_ms']))
+            m = message['user']['id_str'] + "|" + message['id_str'] + "|" + message['user']['screen_name'] + "|" + message['text'] + "|" 
+
+            m += media_formatted + "|" + str(message['retweet_count']) + "|" + str(message['favorite_count']) + "|" + str(message['created_at']) + "|" + str(message['timestamp_ms'])
+
+            message_location.write(m)
 
             message_location.close()
 
