@@ -39,11 +39,12 @@ class FileDataStore(DataStore):
                 tweets.close()
 
     def formatted_media(self, medias):
+
         url = ""
 
         for media in medias:
             if 'photo' == media['type']:
-                url += "%s^%s" % (media['id_str'], media['media_url'])
+                url = "%s^%s,%s" % (media['id_str'], media['media_url'], url)
 
         return url
 
@@ -53,6 +54,7 @@ class FileDataStore(DataStore):
         self.prepare()
 
         media_formatted = self.formatted_media(message['entities']['media']) if 'media' in message['entities'] else ''
+
         m = message['user']['id_str'] + "|" + message['id_str'] + "|" + message['user']['screen_name'] + "|" + message['text'] + "|" + media_formatted + "|" + str(message['retweet_count']) + "|" + str(message['favorite_count']) + "|" + str(message['created_at']) + "|" + str(message['timestamp_ms'])
 
         with open(self.location, "a") as message_location:
