@@ -1,0 +1,5 @@
+decorator==4.0.4
+networkx==1.10
+numpy==1.10.1
+twitter==1.17.1
+wheel==0.24.0
