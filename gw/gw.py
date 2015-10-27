@@ -6,6 +6,11 @@ import re
 import os 
 from api import TwitterCredential as tc
 
+import sys  
+
+reload(sys)  
+sys.setdefaultencoding('utf8')
+
 """
 ################################
 Data Collection
@@ -36,7 +41,7 @@ class FileDataStore(DataStore):
     def formatted_media(self, medias):
         url = ""
 
-        for media in meidas:
+        for media in medias:
             if 'photo' == media['type']:
                 url += "%s^%s" % (media['id_str'], media['media_url'])
 
@@ -47,15 +52,14 @@ class FileDataStore(DataStore):
 
         self.prepare()
 
+        media_formatted = self.formatted_media(message['entities']['media']) if 'media' in message['entities'] else ''
+        m = message['user']['id_str'] + "|" + message['id_str'] + "|" + message['user']['screen_name'] + "|" + message['text'] + "|" + media_formatted + "|" + str(message['retweet_count']) + "|" + str(message['favorite_count']) + "|" + str(message['created_at']) + "|" + str(message['timestamp_ms'])
+
         with open(self.location, 'a') as message_location:
-            media_formatted = self.formatted_media(message['media']) if 'media' in message else ''
-
-            m = message['user']['id_str'] + "|" + message['id_str'] + "|" + message['user']['screen_name'] + "|" + message['text'] + "|" 
-
-            m += media_formatted + "|" + str(message['retweet_count']) + "|" + str(message['favorite_count']) + "|" + str(message['created_at']) + "|" + str(message['timestamp_ms'])
+            self.prepare()
 
             message_location.write(m)
-
+            message_location.flush()
             message_location.close()
 
 class RemoveRetweetFilter:
@@ -77,10 +81,12 @@ class TwitterConnection:
         pass
 
     def getInstance(self):
-        auth = tw.OAuth(tc.OAUTH_TOKEN, 
-                tc.OAUTH_TOKEN_SECRET, 
-                tc.CONSUMER_KEY, 
-                tc.CONSUMER_SECRET)
+        credential = tc()
+        cr = credential.credential()
+        auth = tw.OAuth(cr['oauth_token'], 
+                cr['oauth_token_secret'], 
+                cr['consumer_key'], 
+                cr['consumer_secret'])
 
         return auth
 
@@ -105,7 +111,6 @@ class SearchCollection:
         for tweet in tweets:
             if twfilter.filter(tweet['text']):
                 datastore.save(tweet) 
-                print("%s: %s " % (tweet['user']['screen_name'], tweet['text']))
 
 if __name__ == "__main__":
     twConn = TwitterConnection()
