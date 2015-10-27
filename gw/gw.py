@@ -58,7 +58,7 @@ class FileDataStore(DataStore):
         with open(self.location, "a") as message_location:
             self.prepare()
 
-            message_location.write(m)
+            message_location.write(m + "\n")
             # message_location.flush()
             message_location.close()
 
