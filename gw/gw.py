@@ -44,7 +44,7 @@ class FileDataStore(DataStore):
 
         for media in medias:
             if 'photo' == media['type']:
-                url = "%s^%s,%s" % (media['id_str'], media['media_url'], url)
+                url += "%s^%s," % (media['id_str'], media['media_url'])
 
         return url
 
