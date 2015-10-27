@@ -33,7 +33,7 @@ class FileDataStore(DataStore):
         if '' == self.location:
             self.location = 'ex-raw-data.csv'
 
-        if os.path.isfile(self.location):
+        if not os.path.isfile(self.location):
             with open(self.location, 'w') as tweets:
                 tweets.write("uid|mid|screen_name|text|medias|retweet_count|fav_count|tweet_date|timestamp_ms\n")
                 tweets.close()
@@ -55,11 +55,11 @@ class FileDataStore(DataStore):
         media_formatted = self.formatted_media(message['entities']['media']) if 'media' in message['entities'] else ''
         m = message['user']['id_str'] + "|" + message['id_str'] + "|" + message['user']['screen_name'] + "|" + message['text'] + "|" + media_formatted + "|" + str(message['retweet_count']) + "|" + str(message['favorite_count']) + "|" + str(message['created_at']) + "|" + str(message['timestamp_ms'])
 
-        with open(self.location, 'a') as message_location:
+        with open(self.location, "a") as message_location:
             self.prepare()
 
             message_location.write(m)
-            message_location.flush()
+            # message_location.flush()
             message_location.close()
 
 class RemoveRetweetFilter:
@@ -109,7 +109,8 @@ class SearchCollection:
         tweets = self.__connector.statuses.filter(track=q)
 
         for tweet in tweets:
-            if twfilter.filter(tweet['text']):
+
+            if twfilter.filter(tweet['text']): 
                 datastore.save(tweet) 
 
 if __name__ == "__main__":
